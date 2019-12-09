@@ -10,8 +10,18 @@ fs.readFile('testcase1.js', 'utf8', function(err, contents)
     let out = babel.transform(contents, {plugins:[
         {
             visitor: {
-                Identifier(path) {
-                    path.node.name = 'LOL';
+                // Function(path) {
+                //     console.log(path.node.id.name);
+                // },
+                FunctionExpression(path) {
+                    // console.log(path.parent.id.name);
+                    // console.log(path.node.id.name);
+                },
+                FunctionDeclaration(path) {
+                    console.log(path.node.id.name);
+                },
+                ArrowFunctionExpression(path) {
+                    console.log(path.parent.id.name);
                 }
             }
         }
