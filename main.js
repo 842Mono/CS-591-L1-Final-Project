@@ -1,10 +1,13 @@
 let fs = require('fs');
 // npm install --save-dev @babel/core
 let babel = require("@babel/core");
+let btypes = babel.types;
 
 
 let decorators = {}
 let weaves = {}
+
+// let 
 
 fs.readFile('testcase1.js', 'utf8', function(err, tc1)
 {
@@ -49,7 +52,8 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
 
                     sib = path.getSibling()
                     // console.log(path.node);
-                    chld = path.node.body
+                    // chld = path.node.body
+                    chld = path.get("body.0");
                     console.log("uuuuu")
 
                     for(d in decorators)
@@ -59,26 +63,9 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
             //             // console.log(p2);
                         // p2.insertBefore(decorators[d]);
 
-                        // chld.insertBefore(decorators[d]);
-                        chld.unshift(decorators[d]);
+                        chld.insertBefore(decorators[d]);
+                        // chld.unshift(decorators[d]);
                     }
-
-
-                    // path.traverse({
-                    //     Program(p2) {
-
-                            for(d in decorators)
-                            {
-                    //             console.log(decorators[d]);
-
-                    //             // console.log(p2);
-                                // p2.insertBefore(decorators[d]);
-
-                                // path.insertBefore(decorators[d]);
-                            }
-
-                    //     }
-                    // });
                 },
                 FunctionExpression(path) {
                     // console.log(path.parent.id.name);
@@ -89,8 +76,13 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                         console.log(">><<")
                         // bs = path.get("BlockStatement");
                         // bs.remove();
-                        path.replaceWith(decorators[weaves[path.parent.id.name]]);
-                        // path.remove();
+
+                        // sb = path.getSibling()
+                        // console.log(sb);
+
+                        sb = path.get("BlockStatement")
+                        // sb.insertAfter(babel.types.variableDeclarator(weaves[path.parent.id.name]));
+                        // sb.insertAfter(decorators[weaves[path.parent.id.name]]);
                     }
                 }
             }
