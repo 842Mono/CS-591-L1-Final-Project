@@ -53,7 +53,7 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                     sib = path.getSibling()
                     // console.log(path.node);
                     // chld = path.node.body
-                    chld = path.get("body.0");
+                    // chld = path.get("body.0");
                     console.log("uuuuu")
 
                     for(d in decorators)
@@ -63,7 +63,7 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
             //             // console.log(p2);
                         // p2.insertBefore(decorators[d]);
 
-                        chld.insertBefore(decorators[d]);
+                        // chld.insertBefore(decorators[d]);
                         // chld.unshift(decorators[d]);
                     }
                 },
@@ -80,9 +80,20 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                         // sb = path.getSibling()
                         // console.log(sb);
 
-                        sb = path.get("BlockStatement")
-                        // sb.insertAfter(babel.types.variableDeclarator(weaves[path.parent.id.name]));
-                        // sb.insertAfter(decorators[weaves[path.parent.id.name]]);
+                        // sb = path.get("right")
+                        // path.insertAfter(babel.types.variableDeclarator(["test"])) //(weaves[path.parent.id.name]));
+
+
+                        // path.insertAfter(babel.parse("let x"));
+
+
+                        path.parentPath.parentPath.insertAfter(babel.types.variableDeclaration("let", [
+                            babel.types.variableDeclarator(
+                                babel.types.tsParameterProperty(babel.types.identifier(weaves[path.parent.id.name]))
+                            )
+                        ]));
+
+                        // path.insertAfter(decorators[weaves[path.parent.id.name]]);
                     }
                 }
             }
