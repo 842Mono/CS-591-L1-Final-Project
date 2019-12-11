@@ -5,6 +5,7 @@ let btypes = babel.types;
 
 
 let decorators = {}
+let hasrun = []
 // let weaves = {}
 
 fs.readFile('testcase1.js', 'utf8', function(err, tc1)
@@ -22,21 +23,10 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
             visitor: {
                 FunctionDeclaration(path) {
                     console.log(path.node.id.name);
-                    // console.log(path);
 
-                    // if(path.parent.id.name.startsWith("Decorator_"))
                     decorators[path.node.id.name] = path.node
-                    console.log(decorators)
                     // console.log(decorators);
-                },
-                // CallExpression(path) {
-                //     // console.log(path.node.callee.name);
-                //     if(path.node.callee.name == "weave")
-                //     {
-                //         weaves[path.node.arguments[1].value] = path.node.arguments[0].value;
-                //     }
-                //     console.log(weaves);
-                // }
+                }
             }
         }]});
 
@@ -45,32 +35,16 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
         let out2 = babel.transform(tc1, { plugins: [
         {
             visitor: {
-            //     Program(path) {
-            //         // console.log(path);
-            //         // console.log(path.node.body[0]);
-
-            //         // sib = path.getSibling()
-            //         // console.log(path.node);
-            //         // chld = path.node.body
-            //         // chld = path.get("body.0");
-            //         console.log("uuuuu")
-
-            //         for(d in decorators)
-            //         {
-            // //             console.log(decorators[d]);
-
-            // //             // console.log(p2);
-            //             // p2.insertBefore(decorators[d]);
-
-            //             // chld.insertBefore(decorators[d]);
-            //             // chld.unshift(decorators[d]);
-            //         }
-            //     },
                 FunctionDeclaration(path) {
 
-                    // console.log(path)
-                    if(path.node.id.name in decorators)
+                    console.log("run!!!!");
+                    console.log(path.node.id.name);
+                    
+                    if(!hasrun.includes(path.node.id.name) && path.node.id.name in decorators)
+                    {
                         path.insertAfter(decorators[path.node.id.name]);
+                        hasrun.push(path.node.id.name);
+                    }
 
                     // path.parentPath.parentPath.insertAfter(decorators[path.parent.id.name]);
 
@@ -122,9 +96,6 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
         }]});
 
         console.log(out2.code);
-
-        console.log("f1" in decorators)
-        console.log("f2" in decorators);
       
         // console.log(out.code);
     });
