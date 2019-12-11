@@ -1,16 +1,14 @@
-// tc1 = require("./testcase1.js");
-
-let Decorator_d1 = function(f, a, b)
+function f1(a, b)
 {
     let g = 100;
     console.log("msg1");
-    let x = f(a, b);
+    let x = f1(a, b);
     console.log("msg2");
     return x + g;
 }
 
-let weave = () => {}
-
-weave("d1", "f1");
-
-// tc1();
+function f2()
+{
+    console.log("msg1");
+    return f2();
+}

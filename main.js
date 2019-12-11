@@ -5,9 +5,7 @@ let btypes = babel.types;
 
 
 let decorators = {}
-let weaves = {}
-
-// let 
+// let weaves = {}
 
 fs.readFile('testcase1.js', 'utf8', function(err, tc1)
 {
@@ -22,22 +20,23 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
         let out1 = babel.transform(tc1c, { plugins: [
         {
             visitor: {
-                FunctionExpression(path) {
-                    console.log(path.parent.id.name);
+                FunctionDeclaration(path) {
+                    console.log(path.node.id.name);
                     // console.log(path);
 
-                    if(path.parent.id.name.startsWith("Decorator_"))
-                        decorators[path.parent.id.name.substr(10)] = path.node
-                    console.log(decorators);
+                    // if(path.parent.id.name.startsWith("Decorator_"))
+                    decorators[path.node.id.name] = path.node
+                    console.log(decorators)
+                    // console.log(decorators);
                 },
-                CallExpression(path) {
-                    // console.log(path.node.callee.name);
-                    if(path.node.callee.name == "weave")
-                    {
-                        weaves[path.node.arguments[1].value] = path.node.arguments[0].value;
-                    }
-                    console.log(weaves);
-                }
+                // CallExpression(path) {
+                //     // console.log(path.node.callee.name);
+                //     if(path.node.callee.name == "weave")
+                //     {
+                //         weaves[path.node.arguments[1].value] = path.node.arguments[0].value;
+                //     }
+                //     console.log(weaves);
+                // }
             }
         }]});
 
@@ -46,34 +45,42 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
         let out2 = babel.transform(tc1, { plugins: [
         {
             visitor: {
-                Program(path) {
-                    console.log(path);
-                    // console.log(path.node.body[0]);
+            //     Program(path) {
+            //         // console.log(path);
+            //         // console.log(path.node.body[0]);
 
-                    sib = path.getSibling()
-                    // console.log(path.node);
-                    // chld = path.node.body
-                    // chld = path.get("body.0");
-                    console.log("uuuuu")
+            //         // sib = path.getSibling()
+            //         // console.log(path.node);
+            //         // chld = path.node.body
+            //         // chld = path.get("body.0");
+            //         console.log("uuuuu")
 
-                    for(d in decorators)
-                    {
-            //             console.log(decorators[d]);
+            //         for(d in decorators)
+            //         {
+            // //             console.log(decorators[d]);
 
-            //             // console.log(p2);
-                        // p2.insertBefore(decorators[d]);
+            // //             // console.log(p2);
+            //             // p2.insertBefore(decorators[d]);
 
-                        // chld.insertBefore(decorators[d]);
-                        // chld.unshift(decorators[d]);
-                    }
-                },
-                FunctionExpression(path) {
+            //             // chld.insertBefore(decorators[d]);
+            //             // chld.unshift(decorators[d]);
+            //         }
+            //     },
+                FunctionDeclaration(path) {
+
+                    // console.log(path)
+                    if(path.node.id.name in decorators)
+                        path.insertAfter(decorators[path.node.id.name]);
+
+                    // path.parentPath.parentPath.insertAfter(decorators[path.parent.id.name]);
+
+
                     // console.log(path.parent.id.name);
                     // console.log(weaves)
                     
-                    if(path.parent.id && path.parent.id.name in weaves)
-                    {
-                        console.log(">><<")
+                    // if(path.parent.id && path.parent.id.name in weaves)
+                    // {
+                    //     console.log(">><<")
                         // bs = path.get("BlockStatement");
                         // bs.remove();
 
@@ -87,19 +94,37 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                         // path.insertAfter(babel.parse("let x"));
 
 
-                        path.parentPath.parentPath.insertAfter(babel.types.variableDeclaration("let", [
-                            babel.types.variableDeclarator(
-                                babel.types.tsParameterProperty(babel.types.identifier(weaves[path.parent.id.name]))
-                            )
-                        ]));
+
+
+                        // path.parentPath.parentPath.insertAfter(babel.types.assignmentExpression(
+                        //     babel.types.variableDeclaration("let", [
+                        //         babel.types.variableDeclarator(
+                        //             babel.types.tsParameterProperty(babel.types.identifier(weaves[path.parent.id.name]))
+                        //         )
+                        //     ]),
+                        //     babel.types.file(babel.types.program([[decorators[weaves[path.parent.id.name]]]])
+                        //         , "", "")
+                        // ));
+
+                        // console.log(decorators[weaves[path.parent.id.name]]);
+                        
+
+                        // path.parentPath.parentPath.insertAfter(babel.types.variableDeclaration("let", [
+                        //     babel.types.variableDeclarator(
+                        //         babel.types.tsParameterProperty(babel.types.identifier(weaves[path.parent.id.name]))
+                        //     )
+                        // ]));
 
                         // path.insertAfter(decorators[weaves[path.parent.id.name]]);
-                    }
+                    // }
                 }
             }
         }]});
 
         console.log(out2.code);
+
+        console.log("f1" in decorators)
+        console.log("f2" in decorators);
       
         // console.log(out.code);
     });
