@@ -2,6 +2,7 @@ let fs = require('fs');
 // npm install --save-dev @babel/core
 let babel = require("@babel/core");
 let btypes = babel.types;
+let clone = require("clone");
 
 
 let decorators = {}
@@ -32,7 +33,7 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                         }
                     });
 
-                    decorators[path.node.id.name] = path.node
+                    decorators[path.node.id.name] = path
                 }
             }
         }]});
@@ -44,7 +45,7 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                 {
                     if(!hasrun.includes(path.node.id.name) && path.node.id.name in decorators)
                     {
-                        path.insertAfter(decorators[path.node.id.name]);
+                        path.insertAfter(decorators[path.node.id.name].node);
                         hasrun.push(path.node.id.name);
 
                         path.node.id.name += "_d";
@@ -71,18 +72,19 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                             FunctionExpression(p2)
                             {
                                 console.log("inside")
-                                let c = JSON.parse(JSON.stringify(decorators[name]));
-                                console.log(c);
-                                babel.traverse(c,
+                                console.log(p2.parentPath.node.key.name);
+                                let c = clone(decorators[name])
+                                // console.log(c);
+                                c.traverse(
                                 {
-                                    CallExpression(p2)
+                                    CallExpression(p3)
                                     {
                                         // if(p2.node.callee.name == path.node.id.name)
-                                        p2.node.callee.name =  "sf_d";
+                                        p3.node.callee.name =  p2.parentPath.node.key.name + "_d";
                                     }
-                                })
-                                c.id.name = p2.parentPath.node.key.name + "_d";
-                                p2.parentPath.parentPath.parentPath.insertAfter(c);
+                                });
+                                c.node.id.name = p2.parentPath.node.key.name + "_d";
+                                p2.parentPath.parentPath.parentPath.insertAfter(c.node);
                                 // console.log(p2.parentPath.node);
                                 p2.parentPath.node.key.name += "_d";
                             }
@@ -92,14 +94,6 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                         hasrun.push(name)
                     }                    
                 }
-                // ObjectProperty(path)
-                // {
-                //     console.log("==============")
-                //     console.log(path.node.key.name);
-                //     console.log(path.node)
-                //     console.log(path.parentPath.parentPath)
-                //     console.log("-------------")
-                // }
             }
         }]});
 
