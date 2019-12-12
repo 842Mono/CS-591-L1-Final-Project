@@ -8,9 +8,6 @@ function f1(a, b)
     return x + g;
 }
 
-f1(1, 2);
-f1(2, 3);
-
 function f2()
 {
     console.log("msg f2");
@@ -19,5 +16,62 @@ function f2()
 
 function f3()
 {
-    console.loct("msg f3");
+    console.log("msg f3");
+}
+
+obj1 = {
+    O1:function()
+    {
+        console.log("O1 print");
+        return 22;
+    },
+    O2:function()
+    {
+        console.log("O2 print");
+    },
+    t1:3,
+    t2:"4",
+    t3:{},
+    t4:{t5:"6"},
+    t6:{
+        tt1:function(x)
+        {
+            return x + 1;
+        },
+        tt2:function()
+        {
+            console.log("tt2");
+        }
+    }
+}
+
+obj2 = {
+    O1:function()
+    {
+        console.log("peaceful");
+    }
+}
+
+// obj3 = {
+//     O1:{
+//         tt1:function(x)
+//         {
+//             return x + 2;
+//         },
+//         tt2:function()
+//         {
+//             console.log("tt2");
+//         }
+//     }
+// }
+
+function run()
+{
+    f1(1, 2);
+    console.log("===");
+    f1(2, 3);
+    console.log("===");
+    f2();
+    console.log("===");
+    f3();
 }

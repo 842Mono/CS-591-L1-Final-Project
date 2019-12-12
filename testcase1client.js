@@ -12,3 +12,8 @@ function f2()
     console.log("msg1");
     return f2();
 }
+
+function obj1()
+{
+    return 1 + o1();
+}

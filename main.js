@@ -32,10 +32,7 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                         }
                     });
 
-                    // console.log(fc);
-
                     decorators[path.node.id.name] = path.node
-                    // console.log(decorators);
                 }
             }
         }]});
@@ -52,7 +49,28 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
 
                         path.node.id.name += "_d";
                     }
+                },
+                ObjectExpression(path)
+                {
+                    console.log("===========");
+                    // console.log(path.node);
+                    // console.log(path.parentPath.node);
+                    let name = "";
+                    if(path.parentPath.node.type == "AssignmentExpression")
+                        name = path.parentPath.node.left.name
+                    if(path.parentPath.node.type == "ObjectProperty")
+                        name = path.parentPath.node.key.name
+
+                    console.log(name);
                 }
+                // ObjectProperty(path)
+                // {
+                //     console.log("==============")
+                //     console.log(path.node.key.name);
+                //     console.log(path.node)
+                //     console.log(path.parentPath.parentPath)
+                //     console.log("-------------")
+                // }
             }
         }]});
 
