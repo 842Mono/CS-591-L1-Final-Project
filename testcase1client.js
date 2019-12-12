@@ -15,5 +15,5 @@ function f2()
 
 function obj1()
 {
-    return 1 + o1();
+    return 1 + obj1();
 }

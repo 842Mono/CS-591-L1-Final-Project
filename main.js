@@ -62,6 +62,35 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                         name = path.parentPath.node.key.name
 
                     console.log(name);
+
+                    if(!hasrun.includes(name) && name in decorators)
+                    {
+                        console.log("traversing");
+                        path.traverse(
+                        {
+                            FunctionExpression(p2)
+                            {
+                                console.log("inside")
+                                let c = JSON.parse(JSON.stringify(decorators[name]));
+                                console.log(c);
+                                babel.traverse(c,
+                                {
+                                    CallExpression(p2)
+                                    {
+                                        // if(p2.node.callee.name == path.node.id.name)
+                                        p2.node.callee.name =  "sf_d";
+                                    }
+                                })
+                                c.id.name = p2.parentPath.node.key.name + "_d";
+                                p2.parentPath.parentPath.parentPath.insertAfter(c);
+                                // console.log(p2.parentPath.node);
+                                p2.parentPath.node.key.name += "_d";
+                            }
+                        });
+                    
+
+                        hasrun.push(name)
+                    }                    
                 }
                 // ObjectProperty(path)
                 // {

@@ -34,14 +34,6 @@ obj1 = {
     t3:{},
     t4:{t5:"6"},
     t6:{
-        tt1:function(x)
-        {
-            return x + 1;
-        },
-        tt2:function()
-        {
-            console.log("tt2");
-        }
     }
 }
 
