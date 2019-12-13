@@ -25,5 +25,6 @@ function obj3()
 
 function obj4()
 {
-    return obj4 / 100;
+    console.log("obj4 print");
+    return obj4() / 100;
 }

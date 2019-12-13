@@ -74,7 +74,7 @@ let DoObject = function(path)
                     let lhs = name;
                     for(index in names)
                     {
-                        lhs += "[" + names[index] + "]";
+                        lhs += "[\"" + names[index] + "\"]";
                     }
                     lhs += " =";
 
