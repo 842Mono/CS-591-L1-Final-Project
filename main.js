@@ -28,63 +28,69 @@ let DoObject = function(path, providedName)
         {
             FunctionExpression(p2)
             {
-                // if(!functionadded.includes(name + "_" + p2.parentPath.node.key.name))
-                // if(p2.parentPath.node.key)
-                if(true)
+
+                let c = clone(decorators[name]);
+                
+                let TopPath = p2.parentPath.parentPath.parentPath;
+                let names = [p2.parentPath.node.key.name];
+                while(TopPath.parentPath.type !== "Program")
                 {
-                    let c = clone(decorators[name])
-                    
-                    
-                    let TopPath = p2.parentPath.parentPath.parentPath;
-                    let names = [p2.parentPath.node.key.name];
-                    while(TopPath.parentPath.type !== "Program")
-                    {
-                        if(TopPath.parentPath.node.type == "ObjectExpression" && !names.includes(TopPath.parentPath.node.properties[0].key.name))
-                        {
-                            names.unshift(TopPath.parentPath.node.properties[0].key.name);
-                        }
+                    console.log(TopPath.parentPath.type);
 
-                        TopPath = TopPath.parentPath;
-                        // names.push(TopPath.parentPath.node.key.name);
+                    // let loc = TopPath.parentPath.node.properties.length - 1
+                    if(
+                        TopPath.parentPath.node.type == "ObjectExpression" &&
+                        !names.includes(TopPath.parentPath.node.properties[
+                            TopPath.parentPath.node.properties.length - 1
+                        ].key.name)
+                    )
+                    {
+                        names.unshift(TopPath.parentPath.node.properties[
+                            TopPath.parentPath.node.properties.length - 1
+                        ].key.name);
                     }
-                    
-                    let lhs = name;
-                    for(index in names)
-                    {
-                        lhs += "[\"" + names[index] + "\"]";
-                    }
-                    lhs += " =";
 
-                    let lhs2 = name;
-                    for(let i = 0; i < names.length - 1; ++i)
-                    {
-                        lhs2 += "[\"" + names[i] + "\"]";
-                    }
-                    lhs2 += "."
-
-                    c.traverse(
-                    {
-                        CallExpression(p3)
-                        {
-                            // if(p2.node.callee.name == path.node.id.name)
-                            p3.node.callee.name =  lhs2 + p2.parentPath.node.key.name + "_d";
-                        }
-                    });
-                    // c.node.id.name = p2.parentPath.node.key.name;
-                    c.node.id.name = "";
-
-
-
-                    let objectassignment = babel.parse(lhs + (c))
-                    TopPath.insertAfter(objectassignment);
-                    
-                    // TopPath.insertAfter(c.node);
-                    
-                    // console.log(p2.parentPath.parentPath.parentPath. parentPath.parentPath.type);
-                    p2.parentPath.node.key.name += "_d";
-
-                    functionadded.push(name + "_" + p2.parentPath.node.key.name)
+                    TopPath = TopPath.parentPath;
+                    // names.push(TopPath.parentPath.node.key.name);
                 }
+                
+                let lhs = name;
+                for(index in names)
+                {
+                    lhs += "[\"" + names[index] + "\"]";
+                }
+                lhs += " =";
+
+                let lhs2 = name;
+                for(let i = 0; i < names.length - 1; ++i)
+                {
+                    lhs2 += "[\"" + names[i] + "\"]";
+                }
+                lhs2 += "."
+
+                c.traverse(
+                {
+                    CallExpression(p3)
+                    {
+                        // if(p2.node.callee.name == path.node.id.name)
+                        p3.node.callee.name =  lhs2 + p2.parentPath.node.key.name + "_d";
+                    }
+                });
+                // c.node.id.name = p2.parentPath.node.key.name;
+                c.node.id.name = "";
+
+
+
+                let objectassignment = babel.parse(lhs + (c))
+                TopPath.insertAfter(objectassignment);
+                
+                // TopPath.insertAfter(c.node);
+                
+                // console.log(p2.parentPath.parentPath.parentPath. parentPath.parentPath.type);
+                p2.parentPath.node.key.name += "_d";
+
+                functionadded.push(name + "_" + p2.parentPath.node.key.name)
+            
             }
         });
     
@@ -94,12 +100,12 @@ let DoObject = function(path, providedName)
 }
 
 
-fs.readFile('testcase1.js', 'utf8', function(err, tc1)
+fs.readFile(process.argv[2], 'utf8', function(err, tc1)
 {
     if(err)
         console.log(err);
 
-    fs.readFile('testcase1client.js', 'utf8', function(err, tc1c)
+    fs.readFile(process.argv[3], 'utf8', function(err, tc1c)
     {
         if(err)
             console.log(err);

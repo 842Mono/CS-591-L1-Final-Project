@@ -37,6 +37,25 @@ let obj1 = {
     }
 }
 
+let obj4 = {
+    O1:{
+        O2:{
+            tt1:function(x)
+            {
+                return x + 2;
+            },
+            tt2:function(y)
+            {
+                console.log(y);
+            }
+        },
+        tt3:function(z)
+        {
+            return z * z;
+        }
+    }
+}
+
 let obj2 = {
     O1:function()
     {
@@ -57,12 +76,23 @@ obj3 = {
     }
 }
 
-let obj4 = {
+obj5 = {
+    temp1:function()
+    {
+        return 8;
+    },
     O1:{
+        temp2:function() {
+            console.log("8");
+        },
         O2:{
-            tt1:function(x)
-            {
-                return x + 2;
+            temp3:function() {
+                console.log(3);
+            },
+            O3:{
+                temp4:function(t4) {
+                    return t4 + 4;
+                }
             }
         }
     }

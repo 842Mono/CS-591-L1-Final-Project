@@ -1,9 +1,16 @@
-let x = 3;
-
-function f1(a)
-{
-    console.log(a);
-    if(a == 0)
-        return;
-    f1(a - 1);
+let obj3 = {
+    f1:function()
+    {
+        console.log("f1");
+    },
+    O1:{
+        O3:{
+            O4:{
+                f2:function()
+                {
+                    return 52;
+                }
+            }
+        }
+    }
 }
