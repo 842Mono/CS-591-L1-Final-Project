@@ -37,17 +37,6 @@ let DoObject = function(path)
                 if(true)
                 {
                     let c = clone(decorators[name])
-                
-                    c.traverse(
-                    {
-                        CallExpression(p3)
-                        {
-                            // if(p2.node.callee.name == path.node.id.name)
-                            p3.node.callee.name =  p2.parentPath.node.key.name + "_d";
-                        }
-                    });
-                    // c.node.id.name = p2.parentPath.node.key.name;
-                    c.node.id.name = "";
                     
                     
                     let TopPath = p2.parentPath.parentPath.parentPath;
@@ -57,14 +46,6 @@ let DoObject = function(path)
                         if(TopPath.parentPath.node.type == "ObjectExpression" && !names.includes(TopPath.parentPath.node.properties[0].key.name))
                         {
                             names.unshift(TopPath.parentPath.node.properties[0].key.name);
-                        }
-
-                        console.log(TopPath.parentPath.node);
-                        console.log("nnnnnnnnnnnnn");
-                        if(TopPath.parentPath.node.properties)
-                        {
-                            console.log(TopPath.parentPath.node.properties[0].key);
-                            console.log("kkkkkkkk")
                         }
 
                         TopPath = TopPath.parentPath;
@@ -78,11 +59,28 @@ let DoObject = function(path)
                     }
                     lhs += " =";
 
+                    let lhs2 = name;
+                    for(let i = 0; i < names.length - 1; ++i)
+                    {
+                        lhs2 += "[\"" + names[i] + "\"]";
+                    }
+                    lhs2 += "."
+
+                    c.traverse(
+                    {
+                        CallExpression(p3)
+                        {
+                            // if(p2.node.callee.name == path.node.id.name)
+                            p3.node.callee.name =  lhs2 + p2.parentPath.node.key.name + "_d";
+                        }
+                    });
+                    // c.node.id.name = p2.parentPath.node.key.name;
+                    c.node.id.name = "";
+
+
+
                     let objectassignment = babel.parse(lhs + (c))
                     TopPath.insertAfter(objectassignment);
-
-                    console.log(c.code)
-                    console.log("ccccccccccccccc")
                     
                     // TopPath.insertAfter(c.node);
                     
