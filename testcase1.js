@@ -19,7 +19,7 @@ function f3()
     console.log("msg f3");
 }
 
-obj1 = {
+let obj1 = {
     O1:function()
     {
         console.log("O1 print");
@@ -37,7 +37,7 @@ obj1 = {
     }
 }
 
-obj2 = {
+let obj2 = {
     O1:function()
     {
         console.log("peaceful");
@@ -57,7 +57,7 @@ obj3 = {
     }
 }
 
-obj4 = {
+let obj4 = {
     O1:{
         O2:{
             tt1:function(x)

@@ -4,10 +4,6 @@ let babel = require("@babel/core");
 let btypes = babel.types;
 let clone = require("clone");
 
-let generator = require("@babel/generator")
-console.log(generator)
-let gen = new generator.CodeGenerator
-
 let decorators = {}
 let hasrun = []
 // let weaves = {}
@@ -15,16 +11,16 @@ let functionadded = []
 
 
 
-let DoObject = function(path)
+let DoObject = function(path, providedName)
 {
-    console.log("===========");
-    // console.log(path.node);
-    // console.log(path.parentPath.node);
+    
     let name = "";
     if(path.parentPath.node.type == "AssignmentExpression")
         name = path.parentPath.node.left.name
     if(path.parentPath.node.type == "ObjectProperty")
         name = path.parentPath.node.key.name
+    if(providedName)
+        name = providedName
 
     if(!hasrun.includes(name) && name in decorators)
     {
@@ -41,7 +37,7 @@ let DoObject = function(path)
                     
                     let TopPath = p2.parentPath.parentPath.parentPath;
                     let names = [p2.parentPath.node.key.name];
-                    while(TopPath.parentPath.parentPath.type !== "Program")
+                    while(TopPath.parentPath.type !== "Program")
                     {
                         if(TopPath.parentPath.node.type == "ObjectExpression" && !names.includes(TopPath.parentPath.node.properties[0].key.name))
                         {
@@ -144,9 +140,22 @@ fs.readFile('testcase1.js', 'utf8', function(err, tc1)
                 {
                     DoObject(path);
                 },
-                AssignmentPattern(path)
+                VariableDeclaration(path)
                 {
-                    console.log(path.node);
+                    // console.log(path.node.declarations[0].id.name);
+                    for(let i = 0; i < path.node.declarations.length; ++i)
+                    {
+                        if(path.node.declarations[i].id && path.node.declarations[i].id.name in decorators)
+                        {
+                            path.traverse(
+                            {
+                                ObjectExpression(p2)
+                                {
+                                    DoObject(p2, path.node.declarations[i].id.name);
+                                }
+                            })
+                        }
+                    }
                 }
             }
         }]});
