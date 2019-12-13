@@ -57,6 +57,17 @@ obj3 = {
     }
 }
 
+obj4 = {
+    O1:{
+        O2:{
+            tt1:function(x)
+            {
+                return x + 2;
+            }
+        }
+    }
+}
+
 function run()
 {
     f1(1, 2);

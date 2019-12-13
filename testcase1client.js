@@ -22,3 +22,8 @@ function obj3()
 {
     return obj3() * 3;
 }
+
+function obj4()
+{
+    return obj4 / 100;
+}

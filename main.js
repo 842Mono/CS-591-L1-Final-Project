@@ -51,12 +51,34 @@ let DoObject = function(path)
                     
                     
                     let TopPath = p2.parentPath.parentPath.parentPath;
+                    let names = [p2.parentPath.node.key.name];
                     while(TopPath.parentPath.parentPath.type !== "Program")
                     {
+                        if(TopPath.parentPath.node.type == "ObjectExpression" && !names.includes(TopPath.parentPath.node.properties[0].key.name))
+                        {
+                            names.unshift(TopPath.parentPath.node.properties[0].key.name);
+                        }
+
+                        console.log(TopPath.parentPath.node);
+                        console.log("nnnnnnnnnnnnn");
+                        if(TopPath.parentPath.node.properties)
+                        {
+                            console.log(TopPath.parentPath.node.properties[0].key);
+                            console.log("kkkkkkkk")
+                        }
+
                         TopPath = TopPath.parentPath;
+                        // names.push(TopPath.parentPath.node.key.name);
                     }
                     
-                    let objectassignment = babel.parse(name + "[" + p2.parentPath.node.key.name + "] =" + (c))
+                    let lhs = name;
+                    for(index in names)
+                    {
+                        lhs += "[" + names[index] + "]";
+                    }
+                    lhs += " =";
+
+                    let objectassignment = babel.parse(lhs + (c))
                     TopPath.insertAfter(objectassignment);
 
                     console.log(c.code)
