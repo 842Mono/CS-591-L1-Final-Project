@@ -3,7 +3,7 @@ let g = 5;
 
 function f1(a, b)
 {
-    x = a + b;
+    let x = a + b;
     console.log("x = " + x);
     return x + g;
 }
@@ -44,18 +44,18 @@ obj2 = {
     }
 }
 
-// obj3 = {
-//     O1:{
-//         tt1:function(x)
-//         {
-//             return x + 2;
-//         },
-//         tt2:function()
-//         {
-//             console.log("tt2");
-//         }
-//     }
-// }
+obj3 = {
+    O1:{
+        tt1:function(x)
+        {
+            return x + 2;
+        },
+        tt2:function()
+        {
+            console.log("tt2");
+        }
+    }
+}
 
 function run()
 {

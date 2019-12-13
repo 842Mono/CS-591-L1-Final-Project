@@ -17,3 +17,8 @@ function obj1()
 {
     return 1 + obj1();
 }
+
+function obj3()
+{
+    return obj3() * 3;
+}
