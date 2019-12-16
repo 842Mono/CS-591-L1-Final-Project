@@ -35,8 +35,6 @@ let DoObject = function(path, providedName)
                 let names = [p2.parentPath.node.key.name];
                 while(TopPath.parentPath.type !== "Program")
                 {
-                    console.log(TopPath.parentPath.type);
-
                     // let loc = TopPath.parentPath.node.properties.length - 1
                     if(
                         TopPath.parentPath.node.type == "ObjectExpression" &&
