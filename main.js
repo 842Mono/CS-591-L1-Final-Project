@@ -36,21 +36,10 @@ let DoObject = function(path, providedName)
                 let names = [p2.parentPath.node.key.name];
                 while(TopPath.parentPath.type !== "Program")
                 {
-                    // let loc = TopPath.parentPath.node.properties.length - 1
-                    if(
-                        TopPath.parentPath.node.type == "ObjectExpression" &&
-                        !names.includes(TopPath.parentPath.node.properties[
-                            TopPath.parentPath.node.properties.length - 1
-                        ].key.name)
-                    )
-                    {
-                        names.unshift(TopPath.parentPath.node.properties[
-                            TopPath.parentPath.node.properties.length - 1
-                        ].key.name);
-                    }
+                    if(TopPath.node.type == "ObjectProperty")
+                        names.unshift(TopPath.node.key.name);
 
                     TopPath = TopPath.parentPath;
-                    // names.push(TopPath.parentPath.node.key.name);
                 }
                 
                 let lhs = name;

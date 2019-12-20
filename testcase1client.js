@@ -15,23 +15,19 @@ function function2()
     return function2();
 }
 
-weave("function2", "f2")
 
 function obj1()
 {
     return 1 + obj1();
 }
 
-weave("obj1", "obj1");
 
 function object3()
 {
     return obj3() * 3;
 }
 
-weave("object3", "obj3");
 weave("object3", "obj4");
-weave("object3", "obj5");
 
 function obj4()
 {
