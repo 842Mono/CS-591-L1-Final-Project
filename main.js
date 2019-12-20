@@ -6,7 +6,8 @@ let clone = require("clone");
 
 let decorators = {}
 let hasrun = []
-// let weaves = {}
+let weaves = {}
+let weavesfunctions = {}
 let functionadded = []
 
 
@@ -22,14 +23,14 @@ let DoObject = function(path, providedName)
     if(providedName)
         name = providedName
 
-    if(!hasrun.includes(name) && name in decorators)
+    if(!hasrun.includes(name) && name in weaves)
     {
         path.traverse(
         {
             FunctionExpression(p2)
             {
 
-                let c = clone(decorators[name]);
+                let c = clone(weavesfunctions[name]);
                 
                 let TopPath = p2.parentPath.parentPath.parentPath;
                 let names = [p2.parentPath.node.key.name];
@@ -111,30 +112,67 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
         babel.transform(tc1c, { plugins: [
         {
             visitor: {
-                FunctionDeclaration(path)
+                CallExpression(path)
                 {
-                    path.traverse(
-                    {
-                        CallExpression(p2)
-                        {
-                            if(p2.node.callee.name == path.node.id.name)
-                                p2.node.callee.name += "_d"
-                        }
-                    });
-
-                    decorators[path.node.id.name] = path
+                    if(path.node.callee.name == "weave")
+                        weaves[path.node.arguments[1].value] = path.node.arguments[0].value;
                 }
             }
         }]});
+
+        Object.keys(weaves).forEach(key =>
+        {
+            babel.transform(tc1c, { plugins: [
+            {
+                visitor: {
+                    FunctionDeclaration(path)
+                    {
+                        if(weaves[key] == path.node.id.name)
+                        {
+                            path.traverse(
+                            {
+                                CallExpression(p2)
+                                {
+                                    if(p2.node.callee.name == path.node.id.name)
+                                        p2.node.callee.name = key + "_d"
+                                }
+                            });
+                            weavesfunctions[key] = path;
+                        }
+                    }
+                }
+            }]});
+        });
+
+        // babel.transform(tc1c, { plugins: [
+        // {
+        //     visitor: {
+        //         FunctionDeclaration(path)
+        //         {
+        //             path.traverse(
+        //             {
+        //                 CallExpression(p2)
+        //                 {
+        //                     if(p2.node.callee.name == path.node.id.name)
+        //                         p2.node.callee.name += "_d";
+        //                 }
+        //             });
+
+        //             decorators[path.node.id.name] = path
+        //         }
+        //     }
+        // }]});
 
         let out2 = babel.transform(tc1, { plugins: [
         {
             visitor: {
                 FunctionDeclaration(path)
                 {
-                    if(!hasrun.includes(path.node.id.name) && path.node.id.name in decorators)
+                    if(!hasrun.includes(path.node.id.name) && path.node.id.name in weaves)
                     {
-                        path.insertAfter(decorators[path.node.id.name].node);
+                        // decorators[weaves[path.node.id.name]].node.id.name = path.node.id.name;
+                        weavesfunctions[path.node.id.name].node.id.name = path.node.id.name
+                        path.insertAfter(weavesfunctions[path.node.id.name].node);
                         hasrun.push(path.node.id.name);
 
                         path.node.id.name += "_d";
@@ -149,7 +187,7 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
                     // console.log(path.node.declarations[0].id.name);
                     for(let i = 0; i < path.node.declarations.length; ++i)
                     {
-                        if(path.node.declarations[i].id && path.node.declarations[i].id.name in decorators)
+                        if(path.node.declarations[i].id && path.node.declarations[i].id.name in weaves)
                         {
                             path.traverse(
                             {

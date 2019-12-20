@@ -1,27 +1,37 @@
-function f1(a, b)
+function func1(a, b)
 {
     let g = 100;
     console.log("msg1");
-    let x = f1(a, b);
+    let x = func1(a, b);
     console.log("msg2");
     return x + g;
 }
 
-function f2()
+weave("func1", "f1");
+
+function function2()
 {
     console.log("msg1");
-    return f2();
+    return function2();
 }
+
+weave("function2", "f2")
 
 function obj1()
 {
     return 1 + obj1();
 }
 
-function obj3()
+weave("obj1", "obj1");
+
+function object3()
 {
     return obj3() * 3;
 }
+
+weave("object3", "obj3");
+weave("object3", "obj4");
+weave("object3", "obj5");
 
 function obj4()
 {
@@ -31,4 +41,12 @@ function obj4()
 function obj5()
 {
     return obj5() * obj5();
+}
+
+function class1()
+{
+    console.log("before");
+    let r = class1();
+    console.log("after")
+    return r + 1;
 }
