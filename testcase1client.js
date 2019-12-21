@@ -42,10 +42,12 @@ function obj5()
     return obj5() * obj5();
 }
 
-function class1()
+function class1weave()
 {
     console.log("before");
     let r = class1();
     console.log("after")
     return r + 1;
 }
+
+weave("class1weave", "class1");

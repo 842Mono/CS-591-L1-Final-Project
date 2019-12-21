@@ -4,14 +4,55 @@ let babel = require("@babel/core");
 let btypes = babel.types;
 let clone = require("clone");
 
-let hasrun = []
-let weaves = {}
-let weavesfunctions = {}
-let functionadded = []
+let hasrun = [];
+let weaves = {};
+let weavesfunctions = {};
+let functionadded = [];
+
+let CMDontInsert = [];
 
 
 
-let DoObject = function(path, providedName)
+let DoClassMethod = (path) =>
+{
+    // console.log(path.node);
+    if(path.node.id.name in weaves)
+    {
+        path.traverse(
+        {
+            ClassMethod(p2)
+            {
+                if(p2.node.kind == "method" && !CMDontInsert.includes(p2.node.key.name))
+                {
+                    let clonedfunction = clone(weavesfunctions[path.node.id.name]);
+
+                    clonedfunction.traverse(
+                    {
+                        CallExpression(p3)
+                        {
+                            // console.log(p3.node);
+                            // console.log(p2.node);
+                            if(p3.node.callee.name == path.node.id.name)
+                            {
+                                p3.node.callee.name = p2.node.key.name + "_d"
+                                p3.node.arguments = p2.node.params
+                            }
+                        }
+                    });
+                    // console.log(p2.node.key.name);
+                    // console.log("the key")
+                    let classmethod = babel.types.ClassMethod("method", babel.types.identifier(p2.node.key.name), p2.node.params, clonedfunction.node.body)
+                        
+                    p2.insertAfter(classmethod);
+                    CMDontInsert.push(p2.node.key.name);
+                    p2.node.key.name += "_d";
+                }
+            }
+        });
+    }
+}
+
+let DoObject = (path, providedName) =>
 {
     
     let name = "";
@@ -64,8 +105,8 @@ let DoObject = function(path, providedName)
                         p3.node.arguments = p2.node.params;
 
                         // console.log(p3.node);
-                        console.log(p2.node);
-                        console.log("nnnnnn");
+                        // console.log(p2.node);
+                        // console.log("nnnnnn");
                     }
                 });
                 clonedfunction.node.params = p2.node.params;
@@ -178,6 +219,14 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
         let out2 = babel.transform(tc1, { plugins: [
         {
             visitor: {
+                ClassDeclaration(path)
+                {
+                    DoClassMethod(path);
+                },
+                ClassExpression(path)
+                {
+                    DoClassMethod(path);
+                },
                 FunctionDeclaration(path)
                 {
                     if(!hasrun.includes(path.node.id.name) && path.node.id.name in weaves)
@@ -189,7 +238,7 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
                         {
                             CallExpression(p2)
                             {
-                                console.log(p2.node.callee.name);
+                                // console.log(p2.node.callee.name);
                                 if(p2.node.callee.name == path.node.id.name + "_d")
                                     p2.node.arguments = path.node.params;
                             }
