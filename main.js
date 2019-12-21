@@ -4,7 +4,6 @@ let babel = require("@babel/core");
 let btypes = babel.types;
 let clone = require("clone");
 
-let decorators = {}
 let hasrun = []
 let weaves = {}
 let weavesfunctions = {}
@@ -30,7 +29,7 @@ let DoObject = function(path, providedName)
             FunctionExpression(p2)
             {
 
-                let c = clone(weavesfunctions[name]);
+                let clonedfunction = clone(weavesfunctions[name]);
                 
                 let TopPath = p2.parentPath.parentPath.parentPath;
                 let names = [p2.parentPath.node.key.name];
@@ -56,20 +55,33 @@ let DoObject = function(path, providedName)
                 }
                 lhs2 += "."
 
-                c.traverse(
+                clonedfunction.traverse(
                 {
                     CallExpression(p3)
                     {
                         // if(p2.node.callee.name == path.node.id.name)
                         p3.node.callee.name =  lhs2 + p2.parentPath.node.key.name + "_d";
+                        p3.node.arguments = p2.node.params;
+
+                        // console.log(p3.node);
+                        console.log(p2.node);
+                        console.log("nnnnnn");
                     }
                 });
+                clonedfunction.node.params = p2.node.params;
+                // console.log(clonedfunction.node);
+                // clonedfunction.traverse(
+                // {
+                //     //
+
+                // });
+
                 // c.node.id.name = p2.parentPath.node.key.name;
-                c.node.id.name = "";
+                clonedfunction.node.id.name = "";
 
 
 
-                let objectassignment = babel.parse(lhs + (c))
+                let objectassignment = babel.parse(lhs + (clonedfunction))
                 TopPath.insertAfter(objectassignment);
                 
                 // TopPath.insertAfter(c.node);
@@ -123,7 +135,9 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
                                 CallExpression(p2)
                                 {
                                     if(p2.node.callee.name == path.node.id.name)
-                                        p2.node.callee.name = key + "_d"
+                                    {
+                                        p2.node.callee.name = key + "_d";
+                                    }
                                 }
                             });
                             weavesfunctions[key] = path;
@@ -133,24 +147,33 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
             }]});
         });
 
-        // babel.transform(tc1c, { plugins: [
+        // Object.keys(weavesfunctions).forEach(key =>
         // {
-        //     visitor: {
-        //         FunctionDeclaration(path)
-        //         {
-        //             path.traverse(
-        //             {
-        //                 CallExpression(p2)
-        //                 {
-        //                     if(p2.node.callee.name == path.node.id.name)
-        //                         p2.node.callee.name += "_d";
-        //                 }
-        //             });
-
-        //             decorators[path.node.id.name] = path
+        //     console.log(key);
+        //     console.log(weavesfunctions[key]);
+        //     babel.transform(tc1, { plugins: [
+        //     {
+        //         visitor: {
+        //             // FunctionDeclaration(path)
+        //             // {
+        //             //     if(weaves[key] == path.node.id.name)
+        //             //     {
+        //             //         path.traverse(
+        //             //         {
+        //             //             CallExpression(p2)
+        //             //             {
+        //             //                 if(p2.node.callee.name == path.node.id.name)
+        //             //                 {
+        //             //                     p2.node.callee.name = key + "_d";
+        //             //                 }
+        //             //             }
+        //             //         });
+        //             //         weavesfunctions[key] = path;
+        //             //     }
+        //             // }
         //         }
-        //     }
-        // }]});
+        //     }]});
+        // });
 
         let out2 = babel.transform(tc1, { plugins: [
         {
@@ -160,7 +183,17 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
                     if(!hasrun.includes(path.node.id.name) && path.node.id.name in weaves)
                     {
                         // decorators[weaves[path.node.id.name]].node.id.name = path.node.id.name;
-                        weavesfunctions[path.node.id.name].node.id.name = path.node.id.name
+                        weavesfunctions[path.node.id.name].node.id.name = path.node.id.name;
+                        weavesfunctions[path.node.id.name].node.params = path.node.params;
+                        weavesfunctions[path.node.id.name].traverse(
+                        {
+                            CallExpression(p2)
+                            {
+                                console.log(p2.node.callee.name);
+                                if(p2.node.callee.name == path.node.id.name + "_d")
+                                    p2.node.arguments = path.node.params;
+                            }
+                        });
                         path.insertAfter(weavesfunctions[path.node.id.name].node);
                         hasrun.push(path.node.id.name);
 
@@ -184,7 +217,7 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
                                 {
                                     DoObject(p2, path.node.declarations[i].id.name);
                                 }
-                            })
+                            });
                         }
                     }
                 }

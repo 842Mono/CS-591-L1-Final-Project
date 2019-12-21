@@ -8,10 +8,16 @@ function f1(a, b)
     return x + g;
 }
 
-function f2()
+function f2(a)
 {
     console.log("msg f2");
-    return 5
+    return 5 + a
+}
+
+function f4(a, b, c)
+{
+    let x = a * b;
+    return x + c;
 }
 
 function f3()

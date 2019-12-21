@@ -15,6 +15,9 @@ function function2()
     return function2();
 }
 
+weave("function2", "f2");
+weave("func1", "f4");
+
 
 function obj1()
 {
