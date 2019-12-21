@@ -45,9 +45,10 @@ function obj5()
 function class1weave()
 {
     console.log("before");
-    let r = class1();
+    let r = class1weave();
     console.log("after")
     return r + 1;
 }
 
 weave("class1weave", "class1");
+weave("class1weave", "class2");

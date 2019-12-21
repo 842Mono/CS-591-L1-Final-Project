@@ -1,4 +1,4 @@
-class class1{
+class class1 {
     constructor (x, y)
     {
         this.x = x;

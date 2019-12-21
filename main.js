@@ -15,24 +15,22 @@ let CMDontInsert = [];
 
 let DoClassMethod = (path) =>
 {
-    // console.log(path.node);
     if(path.node.id.name in weaves)
     {
         path.traverse(
         {
             ClassMethod(p2)
             {
-                if(p2.node.kind == "method" && !CMDontInsert.includes(p2.node.key.name))
+                if(p2.node.kind == "method" && !CMDontInsert.includes(path.node.id.name + " - " + p2.node.key.name))
                 {
+                    // console.log(p2.node);
                     let clonedfunction = clone(weavesfunctions[path.node.id.name]);
 
                     clonedfunction.traverse(
                     {
                         CallExpression(p3)
                         {
-                            // console.log(p3.node);
-                            // console.log(p2.node);
-                            if(p3.node.callee.name == path.node.id.name)
+                            if(p3.node.callee.name == path.node.id.name + "_d")
                             {
                                 p3.node.callee.name = p2.node.key.name + "_d"
                                 p3.node.arguments = p2.node.params
@@ -44,7 +42,7 @@ let DoClassMethod = (path) =>
                     let classmethod = babel.types.ClassMethod("method", babel.types.identifier(p2.node.key.name), p2.node.params, clonedfunction.node.body)
                         
                     p2.insertAfter(classmethod);
-                    CMDontInsert.push(p2.node.key.name);
+                    CMDontInsert.push(path.node.id.name + " - " + p2.node.key.name);
                     p2.node.key.name += "_d";
                 }
             }
@@ -188,34 +186,6 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
             }]});
         });
 
-        // Object.keys(weavesfunctions).forEach(key =>
-        // {
-        //     console.log(key);
-        //     console.log(weavesfunctions[key]);
-        //     babel.transform(tc1, { plugins: [
-        //     {
-        //         visitor: {
-        //             // FunctionDeclaration(path)
-        //             // {
-        //             //     if(weaves[key] == path.node.id.name)
-        //             //     {
-        //             //         path.traverse(
-        //             //         {
-        //             //             CallExpression(p2)
-        //             //             {
-        //             //                 if(p2.node.callee.name == path.node.id.name)
-        //             //                 {
-        //             //                     p2.node.callee.name = key + "_d";
-        //             //                 }
-        //             //             }
-        //             //         });
-        //             //         weavesfunctions[key] = path;
-        //             //     }
-        //             // }
-        //         }
-        //     }]});
-        // });
-
         let out2 = babel.transform(tc1, { plugins: [
         {
             visitor: {
@@ -225,20 +195,19 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
                 },
                 ClassExpression(path)
                 {
+                    // console.log(path.node);
                     DoClassMethod(path);
                 },
                 FunctionDeclaration(path)
                 {
                     if(!hasrun.includes(path.node.id.name) && path.node.id.name in weaves)
                     {
-                        // decorators[weaves[path.node.id.name]].node.id.name = path.node.id.name;
                         weavesfunctions[path.node.id.name].node.id.name = path.node.id.name;
                         weavesfunctions[path.node.id.name].node.params = path.node.params;
                         weavesfunctions[path.node.id.name].traverse(
                         {
                             CallExpression(p2)
                             {
-                                // console.log(p2.node.callee.name);
                                 if(p2.node.callee.name == path.node.id.name + "_d")
                                     p2.node.arguments = path.node.params;
                             }
@@ -255,7 +224,6 @@ fs.readFile(process.argv[2], 'utf8', function(err, tc1)
                 },
                 VariableDeclaration(path)
                 {
-                    // console.log(path.node.declarations[0].id.name);
                     for(let i = 0; i < path.node.declarations.length; ++i)
                     {
                         if(path.node.declarations[i].id && path.node.declarations[i].id.name in weaves)
